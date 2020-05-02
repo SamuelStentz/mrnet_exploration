@@ -12,15 +12,18 @@ MAX_PIXEL_VAL = 255
 MEAN = 58.09
 STDDEV = 49.73
 
+EXTERNAL_PATH = "datasets/external_validation"
+MRNET_PATH = "datasets/mrnet_data"
+
 class Dataset(data.Dataset):
-    def __init__(self, datadirs, diagnosis, use_gpu):
+    def __init__(self, datadirs, diagnosis, use_gpu, PATH = EXTERNAL_PATH):
         super().__init__()
         self.use_gpu = use_gpu
 
         label_dict = {}
         self.paths = []
 
-        for i, line in enumerate(open('metadata.csv').readlines()):
+        for i, line in enumerate(open(PATH+'/'+'metadata.csv').readlines()):
             if i == 0:
                 continue
             line = line.strip().split(',')
@@ -29,10 +32,11 @@ class Dataset(data.Dataset):
             label_dict[path] = int(int(label) > diagnosis)
 
         for dir in datadirs:
-            for file in os.listdir(dir):
-                self.paths.append(dir+'/'+file)
+            for file in os.listdir(PATH+'/'+dir):
+                self.paths.append(PATH+'/'+dir+'/'+file)
+        
 
-        self.labels = [label_dict[path[6:]] for path in self.paths]
+        self.labels = [label_dict[path.split("/")[-1]] for path in self.paths]
 
         neg_weight = np.mean(self.labels)
         self.weights = [neg_weight, 1 - neg_weight]

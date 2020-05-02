@@ -8,7 +8,8 @@ from sklearn import metrics
 from torch.autograd import Variable
 
 from loader import load_data
-from model import MRNet
+from architechtures.mrnet_model import MRNet
+from architechtures.transformer_model import TRANNet
 
 def get_parser():
     parser = argparse.ArgumentParser()
