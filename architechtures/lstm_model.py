@@ -2,14 +2,13 @@ import torch
 import torch.nn as nn
 from torchvision import models
 
-class TRANNet(nn.Module):
+class LSTMNet(nn.Module):
     def __init__(self):
         super().__init__()
         self.model = models.alexnet(pretrained=True)
         self.gap = nn.AdaptiveAvgPool2d(1)
-        self.encoder_layer = nn.TransformerEncoderLayer(d_model=256, nhead=8, dropout = .3)
-        self.encoder = nn.TransformerEncoder(self.encoder_layer, num_layers=2)
-        self.classifier = nn.Linear(256, 1)
+        self.lstm = nn.LSTM(256, 256, bidirectional=True)
+        self.classifier = nn.Linear(512, 1)
 
     def forward(self, x):
         x = torch.squeeze(x, dim=0) # only batch size 1 supported
@@ -17,7 +16,7 @@ class TRANNet(nn.Module):
         x = self.gap(x).view(x.size(0), -1)
         # added full transformer encoder stack
         x = x.unsqueeze(1)
-        x = self.encoder(x)
+        x,_ = self.lstm(x)
         x = x.squeeze(1)
         # back to og mrnet
         x = torch.max(x, 0, keepdim=True)[0]

@@ -10,6 +10,7 @@ from torch.autograd import Variable
 from loader import load_data
 from architechtures.mrnet_model import MRNet
 from architechtures.transformer_model import TRANNet
+from architechtures.lstm_model import LSTMNet
 
 def get_parser():
     parser = argparse.ArgumentParser()
@@ -17,6 +18,7 @@ def get_parser():
     parser.add_argument('--split', type=str, required=True)
     parser.add_argument('--diagnosis', type=int, required=True)
     parser.add_argument('--gpu', action='store_true')
+    parser.add_argument('--model_type', default=1, type=int)
     return parser
 
 def run_model(model, loader, train=False, optimizer=None):
@@ -69,7 +71,11 @@ def run_model(model, loader, train=False, optimizer=None):
 def evaluate(split, model_path, diagnosis, use_gpu):
     train_loader, valid_loader, test_loader = load_data(diagnosis, use_gpu)
 
-    model = MRNet()
+    if model_type == 0: model = MRNet()
+    elif model_type == 1: model = TRANNet()
+    elif model_type == 2: model = LSTMNet()
+    else: raise ValueError(f"model_type {model_type} not supported")
+        
     state_dict = torch.load(model_path, map_location=(None if use_gpu else 'cpu'))
     model.load_state_dict(state_dict)
 
@@ -94,4 +100,4 @@ def evaluate(split, model_path, diagnosis, use_gpu):
 
 if __name__ == '__main__':
     args = get_parser().parse_args()
-    evaluate(args.split, args.model_path, args.diagnosis, args.gpu)
+    evaluate(args.split, args.model_path, args.diagnosis, args.gpu, args.model_type)

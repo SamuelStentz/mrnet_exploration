@@ -12,12 +12,15 @@ from evaluate import run_model
 from loader import load_data
 from architechtures.mrnet_model import MRNet
 from architechtures.transformer_model import TRANNet
+from architechtures.lstm_model import LSTMNet
 
 def train(rundir, diagnosis, epochs=50, learning_rate=1e-05, use_gpu=False, model_type=0):
+    torch.set_num_threads(1)
     train_loader, valid_loader, test_loader = load_data(diagnosis, use_gpu)
     
     if model_type == 0: model = MRNet()
     elif model_type == 1: model = TRANNet()
+    elif model_type == 2: model = LSTMNet()
     else: raise ValueError(f"model_type {model_type} not supported")
     
     if use_gpu:
@@ -46,7 +49,7 @@ def train(rundir, diagnosis, epochs=50, learning_rate=1e-05, use_gpu=False, mode
         if val_loss < best_val_loss:
             best_val_loss = val_loss
             if os.path.exists(save_path): os.system(f"rm {save_path}")
-            if not os.path.exists(run_dir): os.makedirs(run_dir)
+            if not os.path.exists(rundir): os.makedirs(rundir)
             file_name = f'val{val_loss:0.4f}_train{train_loss:0.4f}_epoch{epoch+1}'
             save_path = rundir+'/'+file_name
             torch.save(model.state_dict(), save_path)
