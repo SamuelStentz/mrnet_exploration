@@ -15,7 +15,7 @@ from architechtures.transformer_model import TRANNet
 from architechtures.lstm_model import LSTMNet
 
 def train(rundir, diagnosis, epochs=50, learning_rate=1e-05, use_gpu=False, model_type=0):
-    torch.set_num_threads(1)
+    torch.set_num_threads(8)
     train_loader, valid_loader, test_loader = load_data(diagnosis, use_gpu)
     
     if model_type == 0: model = MRNet()

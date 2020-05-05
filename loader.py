@@ -71,8 +71,8 @@ def load_data(diagnosis, use_gpu=False):
     valid_dataset = Dataset(valid_dirs, diagnosis, use_gpu, transform = test_transform)
     test_dataset = Dataset(test_dirs, diagnosis, use_gpu, transform = test_transform)
 
-    train_loader = data.DataLoader(train_dataset, batch_size=1, num_workers=2, shuffle=True)
-    valid_loader = data.DataLoader(valid_dataset, batch_size=1, num_workers=2, shuffle=False)
-    test_loader = data.DataLoader(test_dataset, batch_size=1, num_workers=2, shuffle=False)
+    train_loader = data.DataLoader(train_dataset, batch_size=1, num_workers=8, shuffle=True)
+    valid_loader = data.DataLoader(valid_dataset, batch_size=1, num_workers=8, shuffle=False)
+    test_loader = data.DataLoader(test_dataset, batch_size=1, num_workers=8, shuffle=False)
 
     return train_loader, valid_loader, test_loader
